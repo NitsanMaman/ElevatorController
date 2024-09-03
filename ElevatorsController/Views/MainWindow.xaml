@@ -1,0 +1,288 @@
+﻿<Window x:Class="ElevatorsController.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ElevatorsController.Views"
+        xmlns:converters="clr-namespace:MyWpfApplication.Converters"
+        mc:Ignorable="d"
+        Title="Elevator Controller" Height="800" Width="850">
+        
+    <!-- Resources section for defining reusable styles -->
+    <Window.Resources>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <!-- Define a style for ToggleButton with rounded corners and dynamic background -->
+        <Style x:Key="RoundedButtonStyle" TargetType="ToggleButton">
+            <Setter Property="Background" Value="#008CFF"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="DarkGray"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Width" Value="70"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="Border"
+                        Background="{TemplateBinding Background}" 
+                        BorderBrush="{TemplateBinding BorderBrush}" 
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="10"
+                        Margin="0,0,0,5">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <!-- Change background to green when the button is checked -->
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="Green"/>
+                                <Setter Property="IsEnabled" Value="False"/>
+                            </Trigger>
+                            <!-- Change background to blue when elevator reaches the floor -->
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter TargetName="Border" Property="Background" Value="#008CFF"/>
+                                <Setter Property="IsEnabled" Value="True"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Define a style for ToggleButton with rounded corners and dynamic background version direction -->
+        <Style x:Key="RoundedButtonDirectionStyle" TargetType="ToggleButton">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="DarkGray"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Width" Value="70"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="Border"
+                        Background="{TemplateBinding Background}" 
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="10"
+                        Margin="0,0,0,5">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <!-- Change background to green when the button is checked -->
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="Green"/>
+                                <Setter Property="IsEnabled" Value="False"/>
+                            </Trigger>
+                            <!-- Change background to blue when elevator reaches the floor -->
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter TargetName="Border" Property="Background" Value="Transparent"/>
+                                <Setter Property="IsEnabled" Value="True"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="RoundedTextStyle" TargetType="TextBlock">
+            <Setter Property="Background" Value="#008CFF"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Margin" Value="25,60,0,0"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <!-- Define Columns for Elevators and Floor Buttons -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1.6*"/>
+            <ColumnDefinition Width="1.6*"/>
+            <ColumnDefinition Width="1.6*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Floor Call Buttons -->
+        <Border Grid.Column="0" BorderBrush="DarkGray" BorderThickness="2" CornerRadius="10" Padding="10,30,10,10" Margin="13,70,13,69">
+            <StackPanel>
+                <!-- Bind each button's Command to CallElevatorCommand with the floor number as CommandParameter -->
+                <ToggleButton IsHitTestVisible="{Binding IsSingleDirectionMode, Mode=TwoWay}" Style="{StaticResource RoundedButtonStyle}" Content="10" IsChecked="{Binding Floors[10].IsTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="10" />
+                <ToggleButton IsHitTestVisible="{Binding IsSingleDirectionMode, Mode=TwoWay}" Style="{StaticResource RoundedButtonStyle}" Content="9" IsChecked="{Binding Floors[9].IsTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="9" />
+                <ToggleButton IsHitTestVisible="{Binding IsSingleDirectionMode, Mode=TwoWay}" Style="{StaticResource RoundedButtonStyle}" Content="8" IsChecked="{Binding Floors[8].IsTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="8" />
+                <ToggleButton IsHitTestVisible="{Binding IsSingleDirectionMode, Mode=TwoWay}" Style="{StaticResource RoundedButtonStyle}" Content="7" IsChecked="{Binding Floors[7].IsTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="7" />
+                <ToggleButton IsHitTestVisible="{Binding IsSingleDirectionMode, Mode=TwoWay}" Style="{StaticResource RoundedButtonStyle}" Content="6" IsChecked="{Binding Floors[6].IsTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="6" />
+                <ToggleButton IsHitTestVisible="{Binding IsSingleDirectionMode, Mode=TwoWay}" Style="{StaticResource RoundedButtonStyle}" Content="5" IsChecked="{Binding Floors[5].IsTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="5" />
+                <ToggleButton IsHitTestVisible="{Binding IsSingleDirectionMode, Mode=TwoWay}" Style="{StaticResource RoundedButtonStyle}" Content="4" IsChecked="{Binding Floors[4].IsTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="4" />
+                <ToggleButton IsHitTestVisible="{Binding IsSingleDirectionMode, Mode=TwoWay}" Style="{StaticResource RoundedButtonStyle}" Content="3" IsChecked="{Binding Floors[3].IsTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="3" />
+                <ToggleButton IsHitTestVisible="{Binding IsSingleDirectionMode, Mode=TwoWay}" Style="{StaticResource RoundedButtonStyle}" Content="2" IsChecked="{Binding Floors[2].IsTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="2" />
+                <ToggleButton IsHitTestVisible="{Binding IsSingleDirectionMode, Mode=TwoWay}" Style="{StaticResource RoundedButtonStyle}" Content="1" IsChecked="{Binding Floors[1].IsTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="1" />
+                <ToggleButton IsHitTestVisible="{Binding IsSingleDirectionMode, Mode=TwoWay}" Style="{StaticResource RoundedButtonStyle}" Content="0" IsChecked="{Binding Floors[0].IsTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="0" />
+            </StackPanel>
+        </Border>
+
+        <!-- Floor Call Buttons version direction -->
+        <Border Grid.Column="0" BorderBrush="DarkGray" BorderThickness="2" CornerRadius="10" Padding="10,30,10,10" Margin="13,70,13,69">
+            <StackPanel>
+                <!-- Bind each button's Command to CallElevatorCommand with the floor number as CommandParameter -->
+                <ToggleButton Visibility="Hidden"  Style="{StaticResource RoundedButtonDirectionStyle}" Content="^" IsChecked="{Binding Floors[10].IsTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="10^" Height="25" />
+                <ToggleButton Visibility="{Binding IsTwoDirectionMode, Converter={StaticResource BoolToVis}}" Style="{StaticResource RoundedButtonDirectionStyle}" Content="v" IsChecked="{Binding Floors[10].IsDownTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="10^" Height="25" />
+                <ToggleButton Visibility="{Binding IsTwoDirectionMode, Converter={StaticResource BoolToVis}}" Style="{StaticResource RoundedButtonDirectionStyle}" Content="^" IsChecked="{Binding Floors[9].IsUpTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="9^" Height="25" />
+                <ToggleButton Visibility="{Binding IsTwoDirectionMode, Converter={StaticResource BoolToVis}}" Style="{StaticResource RoundedButtonDirectionStyle}" Content="v" IsChecked="{Binding Floors[9].IsDownTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="9v" Height="25" />
+                <ToggleButton Visibility="{Binding IsTwoDirectionMode, Converter={StaticResource BoolToVis}}" Style="{StaticResource RoundedButtonDirectionStyle}" Content="^" IsChecked="{Binding Floors[8].IsUpTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="8^" Height="25" />
+                <ToggleButton Visibility="{Binding IsTwoDirectionMode, Converter={StaticResource BoolToVis}}" Style="{StaticResource RoundedButtonDirectionStyle}" Content="v" IsChecked="{Binding Floors[8].IsDownTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="8v" Height="25" />
+                <ToggleButton Visibility="{Binding IsTwoDirectionMode, Converter={StaticResource BoolToVis}}" Style="{StaticResource RoundedButtonDirectionStyle}" Content="^" IsChecked="{Binding Floors[7].IsUpTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="7^" Height="25" />
+                <ToggleButton Visibility="{Binding IsTwoDirectionMode, Converter={StaticResource BoolToVis}}" Style="{StaticResource RoundedButtonDirectionStyle}" Content="v" IsChecked="{Binding Floors[7].IsDownTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="7v" Height="25" />
+                <ToggleButton Visibility="{Binding IsTwoDirectionMode, Converter={StaticResource BoolToVis}}" Style="{StaticResource RoundedButtonDirectionStyle}" Content="^" IsChecked="{Binding Floors[6].IsUpTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="6^" Height="25" />
+                <ToggleButton Visibility="{Binding IsTwoDirectionMode, Converter={StaticResource BoolToVis}}" Style="{StaticResource RoundedButtonDirectionStyle}" Content="v" IsChecked="{Binding Floors[6].IsDownTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="6v" Height="25" />
+                <ToggleButton Visibility="{Binding IsTwoDirectionMode, Converter={StaticResource BoolToVis}}" Style="{StaticResource RoundedButtonDirectionStyle}" Content="^" IsChecked="{Binding Floors[5].IsUpTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="5^" Height="25" />
+                <ToggleButton Visibility="{Binding IsTwoDirectionMode, Converter={StaticResource BoolToVis}}" Style="{StaticResource RoundedButtonDirectionStyle}" Content="v" IsChecked="{Binding Floors[5].IsDownTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="5v" Height="25" />
+                <ToggleButton Visibility="{Binding IsTwoDirectionMode, Converter={StaticResource BoolToVis}}" Style="{StaticResource RoundedButtonDirectionStyle}" Content="^" IsChecked="{Binding Floors[4].IsUpTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="4^" Height="25" />
+                <ToggleButton Visibility="{Binding IsTwoDirectionMode, Converter={StaticResource BoolToVis}}" Style="{StaticResource RoundedButtonDirectionStyle}" Content="v" IsChecked="{Binding Floors[4].IsDownTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="4v" Height="25" />
+                <ToggleButton Visibility="{Binding IsTwoDirectionMode, Converter={StaticResource BoolToVis}}" Style="{StaticResource RoundedButtonDirectionStyle}" Content="^" IsChecked="{Binding Floors[3].IsUpTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="3^" Height="25" />
+                <ToggleButton Visibility="{Binding IsTwoDirectionMode, Converter={StaticResource BoolToVis}}" Style="{StaticResource RoundedButtonDirectionStyle}" Content="v" IsChecked="{Binding Floors[3].IsDownTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="3v" Height="25" />
+                <ToggleButton Visibility="{Binding IsTwoDirectionMode, Converter={StaticResource BoolToVis}}" Style="{StaticResource RoundedButtonDirectionStyle}" Content="^" IsChecked="{Binding Floors[2].IsUpTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="2^" Height="25" />
+                <ToggleButton Visibility="{Binding IsTwoDirectionMode, Converter={StaticResource BoolToVis}}" Style="{StaticResource RoundedButtonDirectionStyle}" Content="v" IsChecked="{Binding Floors[2].IsDownTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="2v" Height="25" />
+                <ToggleButton Visibility="{Binding IsTwoDirectionMode, Converter={StaticResource BoolToVis}}" Style="{StaticResource RoundedButtonDirectionStyle}" Content="^" IsChecked="{Binding Floors[1].IsUpTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="1^" Height="25" />
+                <ToggleButton Visibility="{Binding IsTwoDirectionMode, Converter={StaticResource BoolToVis}}" Style="{StaticResource RoundedButtonDirectionStyle}" Content="v" IsChecked="{Binding Floors[1].IsDownTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="1v" Height="25" />
+                <ToggleButton Visibility="{Binding IsTwoDirectionMode, Converter={StaticResource BoolToVis}}" Style="{StaticResource RoundedButtonDirectionStyle}" Content="^" IsChecked="{Binding Floors[0].IsUpTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="0v" Height="25" />
+                <ToggleButton Visibility="Hidden" Style="{StaticResource RoundedButtonDirectionStyle}" Content="v" IsChecked="{Binding Floors[0].IsTargeted, Mode=TwoWay}" Command="{Binding CallElevatorCommand}" CommandParameter="0v" Height="25" />
+            </StackPanel>
+        </Border>
+
+        <!-- Elevator 1 Controls -->
+        <Border Grid.Column="1" BorderBrush="DarkGray" BorderThickness="2" CornerRadius="10" Padding="10,30,10,10" Margin="10,70,10,69">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="0.5*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Current Floor Display for Elevator 1 -->
+                <StackPanel Grid.Column="0">
+                    <TextBox IsHitTestVisible="False" BorderBrush="Transparent" Text="Current&#xD;&#xA;Floor" Margin="10,10,10,0" TextAlignment="Center" IsReadOnly="True"/>
+                    <TextBox IsEnabled="False" TextWrapping="Wrap" Text="{Binding Elevators[0].CurrentIntFloor, Mode=OneWay}" Margin="10,10,10,0"/>
+                </StackPanel>
+
+                <!-- Elevator 1 Slider -->
+                <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                    <Slider IsHitTestVisible="False" Orientation="Vertical" Height="550" Minimum="0" Maximum="11" Value="{Binding Elevators[0].CurrentFloor, Mode=OneWay}"/>
+                </StackPanel>
+
+                <!-- Elevator 1 Buttons -->
+                <StackPanel Grid.Column="2">
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="10" IsChecked="{Binding Elevators[0].FloorStates[10], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[0]}" CommandParameter="10" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="9" IsChecked="{Binding Elevators[0].FloorStates[9], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[0]}" CommandParameter="9" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="8" IsChecked="{Binding Elevators[0].FloorStates[8], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[0]}" CommandParameter="8" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="7" IsChecked="{Binding Elevators[0].FloorStates[7], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[0]}" CommandParameter="7" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="6" IsChecked="{Binding Elevators[0].FloorStates[6], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[0]}" CommandParameter="6" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="5" IsChecked="{Binding Elevators[0].FloorStates[5], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[0]}" CommandParameter="5" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="4" IsChecked="{Binding Elevators[0].FloorStates[4], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[0]}" CommandParameter="4" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="3" IsChecked="{Binding Elevators[0].FloorStates[3], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[0]}" CommandParameter="3" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="2" IsChecked="{Binding Elevators[0].FloorStates[2], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[0]}" CommandParameter="2" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="1" IsChecked="{Binding Elevators[0].FloorStates[1], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[0]}" CommandParameter="1" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="0" IsChecked="{Binding Elevators[0].FloorStates[0], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[0]}" CommandParameter="0" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Repeat for Elevator 2 and Elevator 3 -->
+        <!-- Elevator 2 Controls -->
+        <Border Grid.Column="2" BorderBrush="DarkGray" BorderThickness="2" CornerRadius="10" Padding="10,30,10,10" Margin="10,70,10,69">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="0.5*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Current Floor Display for Elevator 2 -->
+                <StackPanel Grid.Column="0">
+                    <TextBox IsHitTestVisible="False" BorderBrush="Transparent" Text="Current&#xD;&#xA;Floor" Margin="10,10,10,0" TextAlignment="Center" IsReadOnly="True"/>
+                    <TextBox IsEnabled="False" TextWrapping="Wrap" Text="{Binding Elevators[1].CurrentIntFloor, Mode=OneWay}" Margin="10,10,10,0"/>
+                </StackPanel>
+
+                <!-- Elevator 2 Slider -->
+                <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                    <Slider  IsHitTestVisible="False" Orientation="Vertical" Height="550" Minimum="0" Maximum="11" Value="{Binding Elevators[1].CurrentFloor, Mode=OneWay}"/>
+                </StackPanel>
+
+                <!-- Elevator 2 Buttons -->
+                <StackPanel Grid.Column="2">
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="10" IsChecked="{Binding Elevators[1].FloorStates[10], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[1]}" CommandParameter="10" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="9" IsChecked="{Binding Elevators[1].FloorStates[9], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[1]}" CommandParameter="9" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="8" IsChecked="{Binding Elevators[1].FloorStates[8], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[1]}" CommandParameter="8" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="7" IsChecked="{Binding Elevators[1].FloorStates[7], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[1]}" CommandParameter="7" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="6" IsChecked="{Binding Elevators[1].FloorStates[6], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[1]}" CommandParameter="6" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="5" IsChecked="{Binding Elevators[1].FloorStates[5], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[1]}" CommandParameter="5" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="4" IsChecked="{Binding Elevators[1].FloorStates[4], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[1]}" CommandParameter="4" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="3" IsChecked="{Binding Elevators[1].FloorStates[3], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[1]}" CommandParameter="3" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="2" IsChecked="{Binding Elevators[1].FloorStates[2], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[1]}" CommandParameter="2" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="1" IsChecked="{Binding Elevators[1].FloorStates[1], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[1]}" CommandParameter="1" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="0" IsChecked="{Binding Elevators[1].FloorStates[0], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[1]}" CommandParameter="0" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Elevator 3 Controls -->
+        <Border Grid.Column="3" BorderBrush="DarkGray" BorderThickness="2" CornerRadius="10" Padding="10,30,10,10" Margin="10,70,10,69">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="0.5*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Current Floor Display for Elevator 3 -->
+                <StackPanel Grid.Column="0">
+                    <TextBox IsHitTestVisible="False" BorderBrush="Transparent" Text="Current&#xD;&#xA;Floor" Margin="10,10,10,0" TextAlignment="Center" IsReadOnly="True"/>
+                    <TextBox IsEnabled="False" TextWrapping="Wrap" Text="{Binding Elevators[2].CurrentIntFloor, Mode=OneWay}" Margin="10,10,10,0"/>
+                </StackPanel>
+
+                <!-- Elevator 3 Slider -->
+                <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                    <Slider IsHitTestVisible="False" Orientation="Vertical" Height="550" Minimum="0" Maximum="11" Value="{Binding Elevators[2].CurrentFloor, Mode=OneWay}"/>
+                </StackPanel>
+
+                <!-- Elevator 3 Buttons -->
+                <StackPanel Grid.Column="2">
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="10" IsChecked="{Binding Elevators[2].FloorStates[10], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[2]}" CommandParameter="10" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="9" IsChecked="{Binding Elevators[2].FloorStates[9], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[2]}" CommandParameter="9" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="8" IsChecked="{Binding Elevators[2].FloorStates[8], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[2]}" CommandParameter="8" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="7" IsChecked="{Binding Elevators[2].FloorStates[7], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[2]}" CommandParameter="7" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="6" IsChecked="{Binding Elevators[2].FloorStates[6], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[2]}" CommandParameter="6" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="5" IsChecked="{Binding Elevators[2].FloorStates[5], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[2]}" CommandParameter="5" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="4" IsChecked="{Binding Elevators[2].FloorStates[4], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[2]}" CommandParameter="4" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="3" IsChecked="{Binding Elevators[2].FloorStates[3], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[2]}" CommandParameter="3" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="2" IsChecked="{Binding Elevators[2].FloorStates[2], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[2]}" CommandParameter="2" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="1" IsChecked="{Binding Elevators[2].FloorStates[1], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[2]}" CommandParameter="1" />
+                    <ToggleButton Style="{StaticResource RoundedButtonStyle}" Content="0" IsChecked="{Binding Elevators[2].FloorStates[0], Mode=TwoWay}" Command="{Binding MoveElevatorCommands[2]}" CommandParameter="0" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Labels for Floors and Elevators -->
+        <Border Background="#008CFF" CornerRadius="5" Padding="0" Width="50" Height="20" Grid.Column="0"
+            HorizontalAlignment="Left" VerticalAlignment="Top" Margin="24,60,0,0">
+            <TextBlock Text="Floors" Style="{StaticResource RoundedTextStyle}" Margin="5,0,0,0"/>
+        </Border>
+
+        <Border Background="#008CFF" CornerRadius="5" Padding="0" Width="70" Height="20" Grid.Column="1"
+            HorizontalAlignment="Left" VerticalAlignment="Top" Margin="24,60,0,0">
+            <TextBlock Text="Elevator 1" Style="{StaticResource RoundedTextStyle}" Margin="5,0,0,0"/>
+        </Border>
+
+        <Border Background="#008CFF" CornerRadius="5" Padding="0" Width="70" Height="20" Grid.Column="2"
+            HorizontalAlignment="Left" VerticalAlignment="Top" Margin="24,60,0,0">
+            <TextBlock Text="Elevator 2" Style="{StaticResource RoundedTextStyle}" Margin="5,0,0,0"/>
+        </Border>
+
+        <Border Background="#008CFF" CornerRadius="5" Padding="0" Width="70" Height="20" Grid.Column="3"
+            HorizontalAlignment="Left" VerticalAlignment="Top" Margin="24,60,0,0">
+            <TextBlock Text="Elevator 3" Style="{StaticResource RoundedTextStyle}" Margin="5,0,0,0"/>
+        </Border>
+        <RadioButton Content="1Direction" IsChecked="{Binding IsSingleDirectionMode, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        <RadioButton Content="2Direction" IsChecked="{Binding IsSingleDirectionMode, Mode=TwoWay, Converter={StaticResource InverseBooleanConverter}}" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="79,0,0,0"/>
+
+    </Grid>
+</Window>
